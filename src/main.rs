@@ -30,13 +30,43 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     // println!("{:?}", ss_response);
-    // println!("sunup: {}, sundown: {}", ss_response["results"]["sunrise"], ss_response["results"]["sunset"]);
+    println!("sunup: {}, sundown: {}", ss_response["results"]["sunrise"], ss_response["results"]["sunset"]);
     //
 
     let sunup = DateTime::parse_from_rfc3339(ss_response["results"]["sunrise"].as_str().unwrap()).unwrap();
     let sundown = DateTime::parse_from_rfc3339(ss_response["results"]["sunset"].as_str().unwrap()).unwrap();
     println!("{:?}", sunup);
     println!("{:?}", sundown);
+
+    let now: DateTime<Utc> = Utc::now();
+    println!("{:?}", now);
+
+    let nt = now.timestamp();
+    let upt = sunup.timestamp();
+    let downt = sundown.timestamp();
+
+    println!("now: {}, up: {}, down: {}", nt, upt, downt);
+
+    let tomorrowt = Utc.timestamp(nt + 86_400, 0);
+    // println!("{:?}", tomorrowt);
+    let tomorrow = Utc.ymd(tomorrowt.year(), tomorrowt.month(), tomorrowt.day()).and_hms(0, 0, 10);
+    println!("{:?}", tomorrow);
+
+    if upt > nt {
+        println!("it's before dawn");
+        println!("apply dark mode");
+        println!("sleep for: {}", upt - nt);
+    } else if upt <= nt || nt <= downt {
+        println!("it's between dawn and dusk");
+        println!("apply light mode");
+        println!("sleep for: {}", downt - nt);
+    } else {
+        println!("it's after dusk");
+        println!("apply dark mode");
+        println!("sleep for: {}", tomorrow.timestamp() - nt);
+    }
+    // println!("{}", nt - upt);
+    // println!("{}", nt - downt);
 
     Ok(())
 }
