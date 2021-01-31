@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use chrono::prelude::*;
 // use std::env;
+use std::thread;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -38,12 +39,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", sunup);
     println!("{:?}", sundown);
 
-    let now: DateTime<Utc> = Utc::now();
+    let mut now: DateTime<Utc> = Utc::now();
     println!("{:?}", now);
 
     let nt = now.timestamp();
     let upt = sunup.timestamp();
     let downt = sundown.timestamp();
+    let lastchecked = now.day();
 
     println!("now: {}, up: {}, down: {}", nt, upt, downt);
 
@@ -52,18 +54,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let tomorrow = Utc.ymd(tomorrowt.year(), tomorrowt.month(), tomorrowt.day()).and_hms(0, 0, 10);
     println!("{:?}", tomorrow);
 
-    if upt > nt {
-        println!("it's before dawn");
-        println!("apply dark mode");
-        println!("sleep for: {}", upt - nt);
-    } else if upt <= nt || nt <= downt {
-        println!("it's between dawn and dusk");
-        println!("apply light mode");
-        println!("sleep for: {}", downt - nt);
-    } else {
-        println!("it's after dusk");
-        println!("apply dark mode");
-        println!("sleep for: {}", tomorrow.timestamp() - nt);
+    loop {
+        now = Utc::now();
+
+        if now.day() != lastchecked {
+            println!("it's a new day");
+        } else {
+            println!("it's the same day");
+        }
+
+        if upt > nt {
+            println!("it's before dawn");
+            println!("apply dark mode");
+            println!("sleep for: {}", upt - nt);
+        } else if upt <= nt || nt <= downt {
+            println!("it's between dawn and dusk");
+            println!("apply light mode");
+            println!("sleep for: {}", downt - nt);
+        } else {
+            println!("it's after dusk");
+            println!("apply dark mode");
+            println!("sleep for: {}", tomorrow.timestamp() - nt);
+        }
+
+        let one_minute = std::time::Duration::from_secs(60);
+        thread::sleep(one_minute);
     }
     // println!("{}", nt - upt);
     // println!("{}", nt - downt);
