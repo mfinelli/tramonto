@@ -1,5 +1,7 @@
 use chrono::prelude::*;
 
+pub mod config;
+
 #[derive(Debug)]
 pub enum TimeOfDay {
     PreDawn,
