@@ -1,8 +1,8 @@
 use chrono::prelude::*;
 use std::collections::HashMap;
 // use std::env;
-use std::thread;
 use std::process::Command;
+use std::thread;
 
 use detect_desktop_environment::DesktopEnvironment;
 
@@ -91,9 +91,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             tramonto::TimeOfDay::PreDawn => {
                 println!("lib function predawn");
                 let output = Command::new("xfconf-query")
-                    .arg("-c").arg("xsettings")
-                    .arg("-p").arg("/Net/ThemeName")
-                    .arg("-s").arg("Matcha-dark-azul")
+                    .arg("-c")
+                    .arg("xsettings")
+                    .arg("-p")
+                    .arg("/Net/ThemeName")
+                    .arg("-s")
+                    .arg("Matcha-dark-azul")
                     .output()
                     .expect("failed to update theme");
             }
@@ -101,9 +104,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("lib function daytime");
 
                 let output = Command::new("xfconf-query")
-                    .arg("-c").arg("xsettings")
-                    .arg("-p").arg("/Net/ThemeName")
-                    .arg("-s").arg("Matcha-light-azul")
+                    .arg("-c")
+                    .arg("xsettings")
+                    .arg("-p")
+                    .arg("/Net/ThemeName")
+                    .arg("-s")
+                    .arg("Matcha-light-azul")
                     .output()
                     .expect("failed to update theme");
             }
@@ -111,9 +117,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("lib function postdusk");
 
                 let output = Command::new("xfconf-query")
-                    .arg("-c").arg("xsettings")
-                    .arg("-p").arg("/Net/ThemeName")
-                    .arg("-s").arg("Matcha-dark-azul")
+                    .arg("-c")
+                    .arg("xsettings")
+                    .arg("-p")
+                    .arg("/Net/ThemeName")
+                    .arg("-s")
+                    .arg("Matcha-dark-azul")
                     .output()
                     .expect("failed to update theme");
             }

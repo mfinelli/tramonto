@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
@@ -23,7 +23,10 @@ mod tests {
 
     #[test]
     fn ok() {
-        let c = Config { light: "light".to_string(), dark: "dark".to_string() };
+        let c = Config {
+            light: "light".to_string(),
+            dark: "dark".to_string(),
+        };
         assert_eq!(Config::new("---\nlight: light\ndark: dark\n").unwrap(), c);
     }
 
