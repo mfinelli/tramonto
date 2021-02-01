@@ -2,6 +2,7 @@ use chrono::prelude::*;
 use std::collections::HashMap;
 // use std::env;
 use std::thread;
+use std::process::Command;
 
 use detect_desktop_environment::DesktopEnvironment;
 
@@ -89,12 +90,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         match timeofday {
             tramonto::TimeOfDay::PreDawn => {
                 println!("lib function predawn");
+                let output = Command::new("xfconf-query")
+                    .arg("-c").arg("xsettings")
+                    .arg("-p").arg("/Net/ThemeName")
+                    .arg("-s").arg("Matcha-dark-azul")
+                    .output()
+                    .expect("failed to update theme");
             }
             tramonto::TimeOfDay::Daytime => {
                 println!("lib function daytime");
+
+                let output = Command::new("xfconf-query")
+                    .arg("-c").arg("xsettings")
+                    .arg("-p").arg("/Net/ThemeName")
+                    .arg("-s").arg("Matcha-light-azul")
+                    .output()
+                    .expect("failed to update theme");
             }
             tramonto::TimeOfDay::PostDusk => {
                 println!("lib function postdusk");
+
+                let output = Command::new("xfconf-query")
+                    .arg("-c").arg("xsettings")
+                    .arg("-p").arg("/Net/ThemeName")
+                    .arg("-s").arg("Matcha-dark-azul")
+                    .output()
+                    .expect("failed to update theme");
             }
         };
 
