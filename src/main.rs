@@ -3,8 +3,18 @@ use std::collections::HashMap;
 // use std::env;
 use std::thread;
 
+use detect_desktop_environment::DesktopEnvironment;
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let de: DesktopEnvironment = DesktopEnvironment::detect();
+
+    if de == DesktopEnvironment::Xfce {
+        println!("de is ok");
+    } else {
+        panic!("de is not supported!");
+    }
+
     // let args: Vec<String> = env::args().collect();
     //
     let response = reqwest::get("https://ipinfo.io/json")
