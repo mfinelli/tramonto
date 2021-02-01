@@ -63,6 +63,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("it's the same day");
         }
 
+        let timeofday = tramonto::what_time_is_it(now, sunup.with_timezone(&Utc), sundown.with_timezone(&Utc));
+
+        match timeofday {
+            tramonto::TimeOfDay::PreDawn => {
+                println!("lib function predawn");
+            },
+            tramonto::TimeOfDay::Daytime => {
+                println!("lib function daytime");
+            },
+            tramonto::TimeOfDay::PostDusk => {
+                println!("lib function postdusk");
+            }
+        };
+
         if upt > nt {
             println!("it's before dawn");
             println!("apply dark mode");
