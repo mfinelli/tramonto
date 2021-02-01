@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use chrono::prelude::*;
+use std::collections::HashMap;
 // use std::env;
 use std::thread;
 
@@ -22,7 +22,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("didn't get two for lat/lng");
     }
 
-    let url = format!("https://api.sunrise-sunset.org/json?lat={}&lng={}&formatted=0", loc[0], loc[1]);
+    let url = format!(
+        "https://api.sunrise-sunset.org/json?lat={}&lng={}&formatted=0",
+        loc[0], loc[1]
+    );
     // println!("{}", url);
 
     let ss_response = reqwest::get(&url)
@@ -31,11 +34,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     // println!("{:?}", ss_response);
-    println!("sunup: {}, sundown: {}", ss_response["results"]["sunrise"], ss_response["results"]["sunset"]);
+    println!(
+        "sunup: {}, sundown: {}",
+        ss_response["results"]["sunrise"], ss_response["results"]["sunset"]
+    );
     //
 
-    let sunup = DateTime::parse_from_rfc3339(ss_response["results"]["sunrise"].as_str().unwrap()).unwrap();
-    let sundown = DateTime::parse_from_rfc3339(ss_response["results"]["sunset"].as_str().unwrap()).unwrap();
+    let sunup =
+        DateTime::parse_from_rfc3339(ss_response["results"]["sunrise"].as_str().unwrap()).unwrap();
+    let sundown =
+        DateTime::parse_from_rfc3339(ss_response["results"]["sunset"].as_str().unwrap()).unwrap();
     println!("{:?}", sunup);
     println!("{:?}", sundown);
 
@@ -51,7 +59,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let tomorrowt = Utc.timestamp(nt + 86_400, 0);
     // println!("{:?}", tomorrowt);
-    let tomorrow = Utc.ymd(tomorrowt.year(), tomorrowt.month(), tomorrowt.day()).and_hms(0, 0, 10);
+    let tomorrow = Utc
+        .ymd(tomorrowt.year(), tomorrowt.month(), tomorrowt.day())
+        .and_hms(0, 0, 10);
     println!("{:?}", tomorrow);
 
     loop {
@@ -63,15 +73,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("it's the same day");
         }
 
-        let timeofday = tramonto::what_time_is_it(now, sunup.with_timezone(&Utc), sundown.with_timezone(&Utc));
+        let timeofday =
+            tramonto::what_time_is_it(now, sunup.with_timezone(&Utc), sundown.with_timezone(&Utc));
 
         match timeofday {
             tramonto::TimeOfDay::PreDawn => {
                 println!("lib function predawn");
-            },
+            }
             tramonto::TimeOfDay::Daytime => {
                 println!("lib function daytime");
-            },
+            }
             tramonto::TimeOfDay::PostDusk => {
                 println!("lib function postdusk");
             }
