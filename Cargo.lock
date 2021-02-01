@@ -77,16 +77,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ea221b5284a47e40033bf9b66f35f984ec0ea2931eb03505246cd27a963f981b"
 
 [[package]]
-name = "dawnup"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "reqwest",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "encoding_rs"
 version = "0.8.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -957,6 +947,16 @@ checksum = "ab7bb6f14721aa00656086e9335d363c5c8747bae02ebe32ea2c7dece5689b4c"
 dependencies = [
  "pin-project 0.4.27",
  "tracing",
+]
+
+[[package]]
+name = "tramonto"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "reqwest",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]
