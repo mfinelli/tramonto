@@ -1,7 +1,7 @@
 use chrono::prelude::*;
-use std::collections::HashMap;
-// use std::env;
-use std::process::Command;
+// use std::collections::HashMap;
+// // use std::env;
+// use std::process::Command;
 use std::thread;
 
 use detect_desktop_environment::DesktopEnvironment;
@@ -28,6 +28,29 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    // force to yesterday so we guarantee a recheck on first loop
+    // this is fine even if it's the first because 0 != 1
+    let mut last_checked = Utc::now().day() - 1;
+
+    loop {
+        {
+            let now = Utc::now();
+
+            if now.day() != last_checked {
+                last_checked = now.day();
+                println!("it's a new day");
+
+                let loc = tramonto::ip::get_lat_lng().unwrap();
+                println!("{:?}", loc);
+            } else {
+                println!("remove me: it's the same day!");
+            }
+        }
+
+        let one_min = std::time::Duration::from_secs(15);
+        thread::sleep(one_min);
+    }
+
     Ok(())
 }
 
@@ -43,35 +66,6 @@ fn main() {
 
 //#[tokio::main]
 //async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//    let config: Config;
-//    let configdir = dirs::config_dir();
-
-//    match configdir {
-//        Some(mut cd) => {
-//            cd.push("tramonto.yml");
-//            config = Config::from_file(cd.to_str().unwrap()).unwrap_or_else(|err| {
-//                eprintln!("error: {}", err);
-//                process::exit(1);
-//            });
-//            println!("{:?}", config);
-//        },
-//        None => {
-//            eprintln!("error: unable to determine config directory!");
-//            process::exit(1);
-//        }
-//    }
-
-//    std::process::exit(1);
-
-//    let de: DesktopEnvironment = DesktopEnvironment::detect();
-
-//    if de == DesktopEnvironment::Xfce {
-//        println!("de is ok");
-//    } else {
-//        panic!("de is not supported!");
-//    }
-
-//    // let args: Vec<String> = env::args().collect();
 //    //
 //    let response = reqwest::get("https://ipinfo.io/json")
 //        .await?

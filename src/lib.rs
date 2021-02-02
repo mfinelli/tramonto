@@ -1,6 +1,7 @@
 use chrono::prelude::*;
 
 pub mod config;
+pub mod ip;
 
 #[derive(Debug)]
 pub enum TimeOfDay {
