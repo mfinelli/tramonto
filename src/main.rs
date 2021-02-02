@@ -6,8 +6,27 @@ use std::thread;
 
 use detect_desktop_environment::DesktopEnvironment;
 
+use tramonto::config::Config;
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let configdir = dirs::config_dir();
+
+    match configdir {
+        Some(mut cd) => {
+            // println!("found {:?}", cd.into_os_string().into_string());
+            cd.push("tramonto.yml");
+            // println!("{:?}", cd);
+            let config = Config::from_file(cd.to_str().unwrap());
+            println!("{:?}", config);
+        },
+        None => {
+            println!("no configdir, exit!");
+        }
+    }
+
+    std::process::exit(1);
+
     let de: DesktopEnvironment = DesktopEnvironment::detect();
 
     if de == DesktopEnvironment::Xfce {

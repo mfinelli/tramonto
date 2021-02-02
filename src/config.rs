@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Config {
@@ -14,6 +15,23 @@ impl Config {
             Ok(c) => Ok(c),
             Err(e) => Err("unable to parse config or missing values"),
         }
+    }
+
+    pub fn from_file(path: &str) -> Result<Config, &'static str> {
+        let contents = fs::read_to_string(path);
+
+        match contents {
+            Ok(c) => Config::new(&c),
+            Err(e) => Err("unable to read config file"),
+        }
+    }
+
+    pub fn light(&self) -> &String {
+        &self.light
+    }
+
+    pub fn dark(&self) -> &String {
+        &self.dark
     }
 }
 
