@@ -11,21 +11,19 @@ use tramonto::config::Config;
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config: Config;
 
-    {
-        match dirs::config_dir() {
-            Some(mut cd) => {
-                cd.push("tramonto.yml");
-                config = Config::from_file(cd.to_str().unwrap())?;
-            }
-            None => {
-                return Err("unable to determine config directory")?;
-            }
-        };
-
-        let de = DesktopEnvironment::detect();
-        if de != DesktopEnvironment::Xfce {
-            return Err(format!("{:?} is not supported at this time", de))?;
+    match dirs::config_dir() {
+        Some(mut cd) => {
+            cd.push("tramonto.yml");
+            config = Config::from_file(cd.to_str().unwrap())?;
         }
+        None => {
+            return Err("unable to determine config directory")?;
+        }
+    };
+
+    let de = DesktopEnvironment::detect();
+    if de != DesktopEnvironment::Xfce {
+        return Err(format!("{:?} is not supported at this time", de))?;
     }
 
     // force to yesterday so we guarantee a recheck on first loop
@@ -44,8 +42,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 println!("{:?}", loc);
                 let sun = tramonto::sun::SunInfo::from_api(loc.0, loc.1).unwrap();
                 println!("{:?}", sun);
-            } else {
-                println!("remove me: it's the same day!");
+
+                let theme = match tramonto::what_time_is_it(now, sun.sunup().with_timezone(&Utc), sun.sundown().with_timezone(&Utc)) {
+                    tramonto::TimeOfDay::PreDawn => config.dark(),
+                    tramonto::TimeOfDay::Daytime => config.light(),
+                    tramonto::TimeOfDay::PostDusk => config.dark(),
+                };
+
+                match tramonto::switcher::switch_theme(&de, theme) {
+                    Err(e) => return Err("unable to switch theme")?,
+                    _ => ()
+                }
             }
         }
 

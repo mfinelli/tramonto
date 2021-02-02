@@ -37,4 +37,12 @@ impl SunInfo {
             Err(e) => Err("unable to get sun information")?,
         }
     }
+
+    pub fn sunup(&self) -> &DateTime<FixedOffset> {
+        &self.sunrise
+    }
+
+    pub fn sundown(&self) -> &DateTime<FixedOffset> {
+        &self.sunset
+    }
 }
