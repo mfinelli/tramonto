@@ -16,7 +16,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             Some(mut cd) => {
                 cd.push("tramonto.yml");
                 config = Config::from_file(cd.to_str().unwrap())?;
-            },
+            }
             None => {
                 return Err("unable to determine config directory")?;
             }
@@ -68,7 +68,6 @@ fn main() {
 
 //#[tokio::main]
 //async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
 
 //    let mut now: DateTime<Utc> = Utc::now();
 //    println!("{:?}", now);

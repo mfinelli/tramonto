@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 pub fn get_lat_lng() -> Result<(String, String), Box<dyn std::error::Error>> {
-    let response = reqwest::blocking::get("https://ipinfo.io/json")?
-        .json::<HashMap<String, String>>()?;
+    let response =
+        reqwest::blocking::get("https://ipinfo.io/json")?.json::<HashMap<String, String>>()?;
 
     let t = response.get("loc").unwrap();
     match response.get("loc") {
         Some(l) => Ok(split_loc(l)?),
-        None => return Err("location missing from response")?
+        None => return Err("location missing from response")?,
     }
 }
 
@@ -39,6 +39,9 @@ mod tests {
 
     #[test]
     fn just_right() {
-        assert_eq!(split_loc("0,0").unwrap(), ("0".to_string(), "0".to_string()));
+        assert_eq!(
+            split_loc("0,0").unwrap(),
+            ("0".to_string(), "0".to_string())
+        );
     }
 }
