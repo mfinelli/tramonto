@@ -2,6 +2,7 @@ use chrono::prelude::*;
 
 pub mod config;
 pub mod ip;
+pub mod sun;
 
 #[derive(Debug)]
 pub enum TimeOfDay {
