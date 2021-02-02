@@ -10,19 +10,18 @@ use tramonto::config::Config;
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config: Config;
-    let configdir = dirs::config_dir();
-
-    match configdir {
-        Some(mut cd) => {
-            cd.push("tramonto.yml");
-            config = Config::from_file(cd.to_str().unwrap())?;
-        },
-        None => {
-            return Err("unable to determine config directory")?;
-        }
-    };
 
     {
+        match dirs::config_dir() {
+            Some(mut cd) => {
+                cd.push("tramonto.yml");
+                config = Config::from_file(cd.to_str().unwrap())?;
+            },
+            None => {
+                return Err("unable to determine config directory")?;
+            }
+        };
+
         let de = DesktopEnvironment::detect();
         if de != DesktopEnvironment::Xfce {
             return Err(format!("{:?} is not supported at this time", de))?;
