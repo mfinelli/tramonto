@@ -7,6 +7,7 @@ use std::thread;
 use detect_desktop_environment::DesktopEnvironment;
 
 use tramonto::config::Config;
+use tramonto::sun::SunInfo;
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config: Config;
@@ -26,11 +27,19 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err(format!("{:?} is not supported at this time", de))?;
     }
 
-    // force to yesterday so we guarantee a recheck on first loop
-    // this is fine even if it's the first because 0 != 1
-    let mut last_checked = Utc::now().day() - 1;
+    let mut last_checked = Utc::now().day();
+    let mut suninfo: SunInfo;
+
+    // i don't like duplicating this code outside of the loop but with rust
+    // we need to ensure that values are initialized
+    {
+        let loc = tramonto::ip::get_lat_lng().unwrap();
+        suninfo = SunInfo::from_api(loc.0, loc.1).unwrap();
+    }
 
     loop {
+        let wait: std::time::Duration;
+
         {
             let now = Utc::now();
 
@@ -40,24 +49,32 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
                 let loc = tramonto::ip::get_lat_lng().unwrap();
                 println!("{:?}", loc);
-                let sun = tramonto::sun::SunInfo::from_api(loc.0, loc.1).unwrap();
-                println!("{:?}", sun);
-
-                let theme = match tramonto::what_time_is_it(now, sun.sunup().with_timezone(&Utc), sun.sundown().with_timezone(&Utc)) {
-                    tramonto::TimeOfDay::PreDawn => config.dark(),
-                    tramonto::TimeOfDay::Daytime => config.light(),
-                    tramonto::TimeOfDay::PostDusk => config.dark(),
-                };
-
-                match tramonto::switcher::switch_theme(&de, theme) {
-                    Err(e) => return Err("unable to switch theme")?,
-                    _ => ()
-                }
+                suninfo = tramonto::sun::SunInfo::from_api(loc.0, loc.1).unwrap();
+                println!("{:?}", suninfo);
             }
+
+            let whatdo = match tramonto::what_time_is_it(now, suninfo.sunup().with_timezone(&Utc), suninfo.sundown().with_timezone(&Utc)) {
+                tramonto::TimeOfDay::PreDawn => (config.dark(), suninfo.sunup().timestamp() - Utc::now().timestamp()),
+                tramonto::TimeOfDay::Daytime => (config.light(), suninfo.sundown().timestamp() - Utc::now().timestamp()),
+                tramonto::TimeOfDay::PostDusk => {
+                    let tomorrow = Utc.timestamp(Utc::now().timestamp() + 86_400, 0);
+                    let timestamp = Utc.ymd(tomorrow.year(), tomorrow.month(), tomorrow.day()).and_hms(0, 0, 10).timestamp();
+
+                    (config.dark(), timestamp - Utc::now().timestamp())
+                }
+            };
+
+            match tramonto::switcher::switch_theme(&de, whatdo.0) {
+                Err(_e) => return Err("unable to switch theme")?,
+                _ => ()
+            };
+
+            // println!("waiting: {}", whatdo.1);
+            // wait = std::time::Duration::from_secs(15);
+            wait = std::time::Duration::from_secs(whatdo.1 as u64);
         }
 
-        let one_min = std::time::Duration::from_secs(15);
-        thread::sleep(one_min);
+        thread::sleep(wait);
     }
 
     Ok(())
