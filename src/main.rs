@@ -53,12 +53,25 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 println!("{:?}", suninfo);
             }
 
-            let whatdo = match tramonto::what_time_is_it(now, suninfo.sunup().with_timezone(&Utc), suninfo.sundown().with_timezone(&Utc)) {
-                tramonto::TimeOfDay::PreDawn => (config.dark(), suninfo.sunup().timestamp() - Utc::now().timestamp()),
-                tramonto::TimeOfDay::Daytime => (config.light(), suninfo.sundown().timestamp() - Utc::now().timestamp()),
+            let whatdo = match tramonto::what_time_is_it(
+                now,
+                suninfo.sunup().with_timezone(&Utc),
+                suninfo.sundown().with_timezone(&Utc),
+            ) {
+                tramonto::TimeOfDay::PreDawn => (
+                    config.dark(),
+                    suninfo.sunup().timestamp() - Utc::now().timestamp(),
+                ),
+                tramonto::TimeOfDay::Daytime => (
+                    config.light(),
+                    suninfo.sundown().timestamp() - Utc::now().timestamp(),
+                ),
                 tramonto::TimeOfDay::PostDusk => {
                     let tomorrow = Utc.timestamp(Utc::now().timestamp() + 86_400, 0);
-                    let timestamp = Utc.ymd(tomorrow.year(), tomorrow.month(), tomorrow.day()).and_hms(0, 0, 10).timestamp();
+                    let timestamp = Utc
+                        .ymd(tomorrow.year(), tomorrow.month(), tomorrow.day())
+                        .and_hms(0, 0, 10)
+                        .timestamp();
 
                     (config.dark(), timestamp - Utc::now().timestamp())
                 }
@@ -66,7 +79,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
             match tramonto::switcher::switch_theme(&de, whatdo.0) {
                 Err(_e) => return Err("unable to switch theme")?,
-                _ => ()
+                _ => (),
             };
 
             // println!("waiting: {}", whatdo.1);
