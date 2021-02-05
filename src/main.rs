@@ -25,14 +25,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut last_checked = Utc::now().day();
-    let mut suninfo: SunInfo;
-
-    // i don't like duplicating this code outside of the loop but with rust
-    // we need to ensure that values are initialized
-    {
-        let loc = tramonto::ip::get_lat_lng().unwrap();
-        suninfo = SunInfo::from_api(loc.0, loc.1).unwrap();
-    }
+    let mut suninfo = set_suninfo();
 
     loop {
         let wait: std::time::Duration;
@@ -41,13 +34,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             let now = Utc::now();
 
             if now.day() != last_checked {
-                last_checked = now.day();
                 println!("it's a new day");
-
-                let loc = tramonto::ip::get_lat_lng().unwrap();
-                println!("{:?}", loc);
-                suninfo = SunInfo::from_api(loc.0, loc.1).unwrap();
-                println!("{:?}", suninfo);
+                last_checked = now.day();
+                suninfo = set_suninfo();
             }
 
             let whatdo = match tramonto::what_time_is_it(
@@ -84,8 +73,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
         thread::sleep(wait);
     }
+}
 
-    Ok(())
+fn set_suninfo() -> SunInfo {
+    let loc = tramonto::ip::get_lat_lng().unwrap();
+    SunInfo::from_api(loc.0, loc.1).unwrap()
 }
 
 fn main() {
