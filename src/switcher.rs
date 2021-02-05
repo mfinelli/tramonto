@@ -19,7 +19,7 @@ pub fn switch_theme(
 
             match cmd {
                 Ok(_) => Ok(()),
-                Err(e) => Err("failed to update theme")?,
+                Err(_e) => Err("failed to update theme")?,
             }
         }
         _ => Err("you shouldn't be here!")?,

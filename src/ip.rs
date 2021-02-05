@@ -4,7 +4,6 @@ pub fn get_lat_lng() -> Result<(String, String), Box<dyn std::error::Error>> {
     let response =
         reqwest::blocking::get("https://ipinfo.io/json")?.json::<HashMap<String, String>>()?;
 
-    let t = response.get("loc").unwrap();
     match response.get("loc") {
         Some(l) => Ok(split_loc(l)?),
         None => return Err("location missing from response")?,

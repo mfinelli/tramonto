@@ -13,7 +13,7 @@ impl Config {
 
         match config {
             Ok(c) => Ok(c),
-            Err(e) => Err("unable to parse config or missing values"),
+            Err(_e) => Err("unable to parse config or missing values"),
         }
     }
 
@@ -22,7 +22,7 @@ impl Config {
 
         match contents {
             Ok(c) => Config::new(&c),
-            Err(e) => Err("unable to read config file"),
+            Err(_e) => Err("unable to read config file"),
         }
     }
 
